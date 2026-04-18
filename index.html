@@ -472,7 +472,7 @@
     if (items.length === 1) {
       const item = items[0];
       ensureLayerVisible(item.layerLabel);
-      map.setView([item.lat, item.lon], 14);
+      map.setView([item.lat, item.lon], 11);
       item.marker.openPopup();
       return;
     }
@@ -482,14 +482,14 @@
     const isPortrait = window.innerHeight > window.innerWidth;
 
     let padding;
-    if (!isMobile) padding = [30, 30];
-    else if (isPortrait) padding = [30, 80];
+    if (!isMobile) padding = [10, 10];
+    else if (isPortrait) padding = [10, 20];
     else padding = [20, 50];
 
     map.fitBounds(bounds, {
       paddingTopLeft: padding,
       paddingBottomRight: padding,
-      maxZoom: 9
+      maxZoom: 6
     });
 
     if (map.getZoom() < 3) {
