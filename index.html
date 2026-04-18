@@ -512,24 +512,29 @@
     }
   }
   function escapeRegExp(text) { return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  function doSearch() {
-    if (getActiveSearchMode() === 'area') {
-      doAreaSearch();
-      return;
-    }
-    const qLower = searchInput.value.trim().toLowerCase();
-    if (!qLower) { searchResultsEl.innerHTML = ''; return; }
-    let results;
-    if (exactSearch.checked) {
-      const pattern = new RegExp(`(^|[^A-Za-z0-9_])${escapeRegExp(qLower)}([^A-Za-z0-9_]|$)`, 'i');
-      results = searchableItems.filter(item => pattern.test(item.searchTextLower));
-    } else {
-      results = searchableItems.filter(item => item.searchTextLower.includes(qLower));
-    }
-    const limitedResults = results.slice(0, MAX_SEARCH_RESULTS);
-    renderSearchResults(limitedResults);
-    zoomToSearchResults(limitedResults);
+  async function doSearch() {
+  if (getActiveSearchMode() === 'area') {
+    await doAreaSearch();
+    return;
   }
+
+  const qLower = searchInput.value.trim().toLowerCase();
+  if (!qLower) {
+    searchResultsEl.innerHTML = '';
+    return;
+  }
+
+  let results;
+  if (exactSearch.checked) {
+    const pattern = new RegExp(`(^|[^A-Za-z0-9_])${escapeRegExp(qLower)}([^A-Za-z0-9_]|$)`, 'i');
+    results = searchableItems.filter(item => pattern.test(item.searchTextLower));
+  } else {
+    results = searchableItems.filter(item => item.searchTextLower.includes(qLower));
+  }
+
+  const limited = results.slice(0, MAX_SEARCH_RESULTS);
+  renderSearchResults(limited);
+}
   function buildLayerList() {
     layersListEl.innerHTML = '';
     Object.values(layerRegistry).forEach(layerInfo => {
