@@ -335,26 +335,41 @@
   }
 
   function renderAreaResults(items) {
-    if (!items.length) {
-      searchResultsEl.innerHTML = '<div class="search-result-line">האזור לא נמצא</div>';
-      return;
-    }
-    searchResultsEl.innerHTML = '';
-    items.forEach(item => {
-      const row = document.createElement('div');
-      row.className = 'search-result-item';
-      const bbox = item._bounds || parseBoundingBox(item);
-      row.innerHTML = `<div class="search-result-line">${escapeHtml(normalizeAreaName(item))}</div>`;
-      row.addEventListener('click', () => {
-        if (zoomToBounds(bbox)) {
-          searchPanel.classList.remove('open');
-        } else {
-          searchResultsEl.innerHTML = '<div class="search-result-line">לא ניתן לבצע זום לאזור זה</div>';
-        }
-      });
-      searchResultsEl.appendChild(row);
-    });
+  if (!items.length) {
+    searchResultsEl.innerHTML = '<div class="search-result-line">האזור לא נמצא</div>';
+    return;
   }
+
+  // תוצאה אחת בלבד -> זום מיידי
+  if (items.length === 1) {
+    const item = items[0];
+    const bbox = item._bounds || parseBoundingBox(item);
+
+    if (zoomToBounds(bbox)) {
+      searchResultsEl.innerHTML = `<div class="search-result-line">${escapeHtml(normalizeAreaName(item))}</div>`;
+    } else {
+      searchResultsEl.innerHTML = '<div class="search-result-line">לא ניתן לבצע זום לאזור זה</div>';
+    }
+    return;
+  }
+
+  searchResultsEl.innerHTML = '';
+  items.forEach(item => {
+    const row = document.createElement('div');
+    row.className = 'search-result-item';
+    const bbox = item._bounds || parseBoundingBox(item);
+    row.innerHTML = `<div class="search-result-line">${escapeHtml(normalizeAreaName(item))}</div>`;
+    row.addEventListener('click', () => {
+      if (zoomToBounds(bbox)) {
+        searchPanel.classList.remove('open');
+      } else {
+        searchResultsEl.innerHTML = '<div class="search-result-line">לא ניתן לבצע זום לאזור זה</div>';
+      }
+    });
+    searchResultsEl.appendChild(row);
+  });
+}
+
 
   async function searchExternalArea(query) {
     const predefined = getPredefinedAreaBounds(query);
